@@ -1,2 +1,20 @@
 ---
 # tasks file for thatoldslice-db
+- name: Create database instance
+  gcp_sql_instance:
+    name: thatoldslice-db
+    backend_type: SECOND_GEN
+    database_version: MYSQL_5_7
+    settings:
+      ip_configuration:
+        require_ssl: no
+        ipv4_enabled: yes
+        authorized_networks:
+        - name: google dns server
+          value: 8.8.8.8/32
+      tier: db-f1-micro
+    region: us-east4
+    project: thatoldslice-ha
+    auth_kind: "serviceaccount"
+    service_account_file: "{{ ansible_credential_file }}"
+    state: present
