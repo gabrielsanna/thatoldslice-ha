@@ -1,0 +1,131 @@
+---
+resources:
+  - name: vm-instance-test
+    type: compute.v1.instance
+    properties:
+      name: thatoldslice
+      machineType: zones/us-east4-a/machineTypes/n1-standard-1
+      zone: us-east4-a
+      networkInterfaces:
+        - network: global/networks/default
+          accessConfigs:
+            - type: ONE_TO_ONE_NAT
+              name: External NAT
+              networkTier: PREMIUM
+      disks:
+        - type: PERSISTENT
+          mode: READ_WRITE
+          boot: true
+          initializeParams:
+            sourceImage: projects/ubuntu-os-cloud/global/images/ubuntu-1804-bionic-v20181203a
+            diskSizeGb: 10
+  - kind: sql#instance
+    name: thatoldslice-db
+    databaseVersion: MYSQL_5_7
+    project: thatoldslice-ha
+    backendType: SECOND_GEN
+    region: us-east4
+    maxDiskSize: 2147483648
+    settings:
+      kind: sql#settings
+      tier: db-n1-standard-1
+      backupConfiguration:
+        kind: sql#backupConfiguration
+        startTime: 01:00
+        enabled: true
+        binaryLogEnabled: true
+        replicationLogArchivingEnabled: false
+      pricingPlan: PER_USE
+
+
+
+{
+  "settings": {
+    "replicationType": string,
+    "activationPolicy": string,
+    "ipConfiguration": {
+      "ipv4Enabled": boolean,
+      "authorizedNetworks": [
+        {
+          "kind": "sql#aclEntry",
+          "value": string,
+          "name": string,
+          "expirationTime": datetime
+        }
+      ],
+      "requireSsl": boolean,
+      "privateNetwork": string
+    },
+    "locationPreference": {
+      "kind": "sql#locationPreference",
+      "followGaeApplication": string,
+      "zone": string
+    },
+    "databaseFlags": [
+      {
+        "name": string,
+        "value": string
+      }
+    ],
+    "databaseReplicationEnabled": boolean,
+    "crashSafeReplicationEnabled": boolean,
+    "dataDiskSizeGb": long,
+    "dataDiskType": string,
+    "maintenanceWindow": {
+      "kind": "sql#maintenanceWindow",
+      "hour": integer,
+      "day": integer,
+      "updateTrack": string
+    },
+    "storageAutoResize": boolean,
+    "storageAutoResizeLimit": long,
+    "availabilityType": string,
+    "userLabels": {
+      (key): string
+    }
+  },
+  "serverCaCert": sslCerts Resource,
+  "ipAddresses": [
+    {
+      "ipAddress": string,
+      "timeToRetire": datetime,
+      "type": string
+    }
+  ],
+  "instanceType": string,
+  "masterInstanceName": string,
+  "replicaNames": [
+    string
+  ],
+  "failoverReplica": {
+    "name": string,
+    "available": boolean
+  },
+  "ipv6Address": string,
+  "serviceAccountEmailAddress": string,
+  "onPremisesConfiguration": {
+    "kind": "sql#onPremisesConfiguration",
+    "hostPort": string
+  },
+  "replicaConfiguration": {
+    "kind": "sql#replicaConfiguration",
+    "mysqlReplicaConfiguration": {
+      "kind": "sql#mysqlReplicaConfiguration",
+      "dumpFilePath": string,
+      "username": string,
+      "password": string,
+      "connectRetryInterval": integer,
+      "masterHeartbeatPeriod": long,
+      "caCertificate": string,
+      "clientCertificate": string,
+      "clientKey": string,
+      "sslCipher": string,
+      "verifyServerCertificate": boolean
+    },
+    "failoverTarget": boolean
+  },
+  "suspensionReason": [
+    string
+  ],
+  "gceZone": string
+}

@@ -1,0 +1,3 @@
+---
+# vars file for thatoldslice-db
+ansible_credential_file: /Users/gsanna/thatoldslice-ha-8447bcfe7f10.json
