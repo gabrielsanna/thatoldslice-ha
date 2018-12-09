@@ -1,0 +1,6 @@
+plugin: gcp_compute
+projects:
+  - thatoldslice-ha
+filters:
+auth_kind: serviceaccount
+service_account_file: /Users/gsanna/thatoldslice-ha-8447bcfe7f10.json
