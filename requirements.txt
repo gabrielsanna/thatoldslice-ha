@@ -1,2 +1,4 @@
 requests
 google-auth
+apache-libcloud
+pycrypto
