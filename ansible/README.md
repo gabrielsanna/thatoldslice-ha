@@ -22,4 +22,4 @@ On Google Cloud Console:
 - A lot more refreshing pages
 - Console is not as orderly
 - Account is Google account, which is both convenient and nerve-racking
-- 
+- Everything is HTTP APIs behind the scenes, which means all error messages come with HTTP error codes (i.e. 400) and the API for each type of resource must be enabled

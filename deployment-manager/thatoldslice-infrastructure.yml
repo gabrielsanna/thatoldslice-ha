@@ -1,0 +1,61 @@
+---
+resources:
+  - name: vm-instance-test
+    type: compute.v1.instance
+    properties:
+      name: thatoldslice
+      machineType: zones/us-east4-a/machineTypes/n1-standard-1
+      zone: us-east4-a
+      networkInterfaces:
+        - network: global/networks/default
+          accessConfigs:
+            - type: ONE_TO_ONE_NAT
+              name: External NAT
+              networkTier: PREMIUM
+      disks:
+        - type: PERSISTENT
+          mode: READ_WRITE
+          boot: true
+          initializeParams:
+            sourceImage: projects/ubuntu-os-cloud/global/images/ubuntu-1804-bionic-v20181203a
+            diskSizeGb: 10
+  - name: thatoldslice-db
+    type: sqladmin.v1beta4.instance
+    properties:
+      name: thatoldslice-db
+      project: thatoldslice-ha
+      backendType: SECOND_GEN
+      databaseVersion: MYSQL_5_7
+      region: us-east4
+      maxDiskSize: 2147483648
+      settings:
+        tier: db-n1-standard-1
+        backupConfiguration:
+          startTime: 01:00
+          enabled: true
+          binaryLogEnabled: true
+          replicationLogArchivingEnabled: false
+        pricingPlan: PER_USE
+        replicationType: ASYNCHRONOUS
+        activationPolicy: ALWAYS
+        ipConfiguration:
+          ipv4Enabled: true
+          authorizedNetworks:
+            - kind: sql#aclEntry
+              value: 10.142.0.0/20
+              name: Default network
+              expirationTime: 2020-12-15T16:19:00.094Z
+          requireSsl: false
+          privateNetwork: /projects/thatoldslice-ha/global/networks/default
+        locationPreference:
+          zone: us-east4-a
+        dataDiskSizeGb: 10
+        dataDiskType: PD_SSD
+        maintenanceWindow:
+          hour: 0
+          day: 7
+          updateTrack: stable
+        storageAutoResize: true
+        storageAutoResizeLimit: 15
+      instanceType: CLOUD_SQL_INSTANCE
+      serviceAccountEmailAddress: ansible@thatoldslice-ha.iam.gserviceaccount.com
