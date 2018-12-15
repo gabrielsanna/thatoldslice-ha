@@ -16,3 +16,4 @@ gcloud deployment-manager deployments create ${STACK_NAME} \
 	--config ./deployment-manager/thatoldslice-infrastructure.yml
 
 # Run ansible playbook
+ansible-playbook -i ansible/inventory.gcp.yml ansible/main.yml
