@@ -1,0 +1,107 @@
+---
+# tasks file for thatoldslice
+- name: Install dependencies
+  apt:
+    name:
+      - apache2
+      - apache2-dev
+      - python3.7
+      - python3.7-venv
+      - python3-venv
+      - python3-pip
+      - python-pip
+      - git
+    state: present
+    update_cache: true
+
+- name: Create directory for the git repo
+  file:
+    path: /var/www/thatoldslice
+    state: directory
+    recurse: false
+    owner: www-data
+    group: www-data
+    mode: 0755
+
+- name: Create directory for the git repo
+  file:
+    path: /var/www/thatoldslice/public_wsgi
+    state: directory
+    recurse: false
+    owner: www-data
+    group: www-data
+    mode: 0775
+
+- name: Install the git repo
+  git:
+    repo: 'https://github.com/gabrielsanna/thatoldslice.git'
+    dest: /var/www/thatoldslice/public_wsgi
+    force: true
+  notify: Restart apache
+
+- name: Create Python 3.7 virtualenv
+  command: "/usr/bin/python3.7 -m venv /srv/mod_wsgi37_venv"
+  args:
+    creates: "/srv/mod_wsgi37_venv"
+  notify: Restart apache
+
+- name: Install mod_wsgi with pip
+  pip:
+    name: mod_wsgi
+    virtualenv: /srv/mod_wsgi37_venv
+    virtualenv_python: /usr/bin/python3.7
+  notify: Restart apache
+
+- name: Install Python3.7 prereqs with pip
+  pip:
+    requirements: /var/www/thatoldslice/public_wsgi/requirements.txt
+    virtualenv: /srv/mod_wsgi37_venv
+  notify: Restart apache
+
+- name: Copy over module loader file for mod_wsgi
+  copy:
+    src: ../files/wsgi37.load
+    dest: /etc/apache2/mods-available/wsgi37.load
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart apache
+
+- name: Copy over module confing file for mod_wsgi
+  copy:
+    src: ../files/wsgi37.conf
+    dest: /etc/apache2/mods-available/wsgi37.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart apache
+
+- name: Create symlink to enable mod_wsgi loader
+  file:
+    state: link
+    path: /etc/apache2/mods-enabled/wsgi37.load
+    src: ../mods-available/wsgi37.load
+  notify: Restart apache
+
+- name: Create symlink to enable mod_wsgi config
+  file:
+    state: link
+    path: /etc/apache2/mods-enabled/wsgi37.conf
+    src: ../mods-available/wsgi37.conf
+  notify: Restart apache
+
+- name: Copy over conf file for thatoldslice VirtualHost
+  copy:
+    src: ../files/thatoldslice.conf
+    dest: /etc/apache2/sites-available/thatoldslice.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart apache
+
+- name: Create symlink to enable VirtualHost
+  file:
+    state: link
+    path: /etc/apache2/sites-enabled/thatoldslice.conf
+    src: ../sites-available/thatoldslice.conf
+  notify: Restart apache

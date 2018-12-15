@@ -1,0 +1,1 @@
+LoadModule wsgi_module "/srv/mod_wsgi37_venv/lib/python3.7/site-packages/mod_wsgi/server/mod_wsgi-py37.cpython-37m-x86_64-linux-gnu.so"
