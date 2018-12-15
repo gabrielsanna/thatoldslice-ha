@@ -23,3 +23,5 @@ On Google Cloud Console:
 - Console is not as orderly
 - Account is Google account, which is both convenient and nerve-racking
 - Everything is HTTP APIs behind the scenes, which means all error messages come with HTTP error codes (i.e. 400) and the API for each type of resource must be enabled
+- Deleting stack does not delete all resources (disks persist and must be manually deleted)
+- SQL database names are reserved for UP TO TWO MONTHS (The instance or operation is not in an appropriate state to handle the request.)
