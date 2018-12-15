@@ -6,6 +6,9 @@ resources:
     type: compute.v1.instance
     properties:
       name: thatoldslice
+      tags:
+        items:
+          - "http-server"
       machineType: zones/us-east4-a/machineTypes/n1-standard-1
       zone: us-east4-a
       networkInterfaces:
