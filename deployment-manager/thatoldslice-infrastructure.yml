@@ -1,6 +1,8 @@
 ---
+imports:
+  - path: database.jinja
 resources:
-  - name: vm-instance-test
+  - name: thatoldslice-webapp
     type: compute.v1.instance
     properties:
       name: thatoldslice
@@ -19,43 +21,21 @@ resources:
           initializeParams:
             sourceImage: projects/ubuntu-os-cloud/global/images/ubuntu-1804-bionic-v20181203a
             diskSizeGb: 10
-  - name: thatoldslice-db
-    type: sqladmin.v1beta4.instance
+      metadata:
+        items:
+          - key: startup-script
+            value: |
+              #!/bin/bash
+              apt install -y python
+              mkdir -p /home/ansible/.ssh
+              useradd -d /home/ansible ansible
+              echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDkg0IPReRctEO31eHmx9r4K2yLt0raQAVIjevBA8pJuA+S8zTOgBtEPuIGv9rFoLWUV+vzsSLCvgTmVIFv2Q5NN3E1Dgi1k0mo7TVs+JdDI/DY4KCoRZVQc7VesbVVMZs3fV41a3y732UmXN8bg3UBOM1EvLmj8zricLqbyTLzKVZksRRDMjOwyRZ3DArZmb1+2Nfnfrx43Qap0j+gzaTFIyhcK5B9+tzC8UE1j+O18jsjsMYnWjkA8KvdUjSeH50r2H3RVL8/3MVXSDGwCCcGb4OGptpL5uAdkBnbeBnDfNp8VRvZSJuRe/1uHs0GpjP/jTeaaO3z5cvmCQ6IQlSx gsanna@MacBook-Pro-2.cable.rcn.com" > /home/ansible/.ssh/authorized_keys
+              chown -R ansible:ansible /home/ansible
+              chmod 700 /home/ansible/.ssh
+              chmod 400 /home/ansible/.ssh/authorized_keys
+              echo "ansible ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
+  - name: thatoldslice-db-stack
+    type: database.jinja
     properties:
-      name: thatoldslice-db
-      project: thatoldslice-ha
-      backendType: SECOND_GEN
-      databaseVersion: MYSQL_5_7
+      tier: db-n1-standard-1
       region: us-east4
-      maxDiskSize: 2147483648
-      settings:
-        tier: db-n1-standard-1
-        backupConfiguration:
-          startTime: 01:00
-          enabled: true
-          binaryLogEnabled: true
-          replicationLogArchivingEnabled: false
-        pricingPlan: PER_USE
-        replicationType: ASYNCHRONOUS
-        activationPolicy: ALWAYS
-        ipConfiguration:
-          ipv4Enabled: true
-          authorizedNetworks:
-            - kind: sql#aclEntry
-              value: 10.142.0.0/20
-              name: Default network
-              expirationTime: 2020-12-15T16:19:00.094Z
-          requireSsl: false
-          privateNetwork: /projects/thatoldslice-ha/global/networks/default
-        locationPreference:
-          zone: us-east4-a
-        dataDiskSizeGb: 10
-        dataDiskType: PD_SSD
-        maintenanceWindow:
-          hour: 0
-          day: 7
-          updateTrack: stable
-        storageAutoResize: true
-        storageAutoResizeLimit: 15
-      instanceType: CLOUD_SQL_INSTANCE
-      serviceAccountEmailAddress: ansible@thatoldslice-ha.iam.gserviceaccount.com
