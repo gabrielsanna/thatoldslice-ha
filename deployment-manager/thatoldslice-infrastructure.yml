@@ -42,3 +42,4 @@ resources:
     properties:
       tier: db-n1-standard-1
       region: us-east4
+      admin_pass: demopass1
