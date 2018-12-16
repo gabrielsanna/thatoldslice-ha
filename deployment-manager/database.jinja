@@ -1,6 +1,6 @@
 {% set deployment_name = env['deployment']  %}
 {% set instance_name = deployment_name + '-instance'  %}
-{% set database_name = deployment_name + '-db'  %}
+{% set database_name = deployment_name + '-db' %}
 
 resources:
 - name: {{ instance_name }}
@@ -12,6 +12,9 @@ resources:
       backupConfiguration:
         binaryLogEnabled: true
         enabled: true
+      ipConfiguration:
+        authorizedNetworks:
+          - value: 0.0.0.0/0
 
 - name: {{ database_name }}
   type: gcp-types/sqladmin-v1beta4:databases
@@ -31,4 +34,15 @@ resources:
     instance: $(ref.{{ instance_name }}.name)
     name: root
     host: "%"
+- name: database-user
+  type: sqladmin.v1beta4.user
+  properties:
+    name: {{ deployment_name }}
+    password: {{ properties['admin_pass'] }}
+    instance: $(ref.{{ instance_name }}.name)
+  metadata:
+    dependsOn:
+      - {{ instance_name }}
+      - {{ database_name }}
+      - delete-user-root
 {% set dependency = 'delete-user-root' %}
