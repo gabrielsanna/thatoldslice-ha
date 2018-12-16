@@ -1,2 +1,6 @@
 ---
 # vars file for thatoldslice
+DB_IP: 35.221.39.158
+DB_NAME: thatoldslice-10-db
+DB_USER: thatoldslice-10
+DB_PASS: demopass1
